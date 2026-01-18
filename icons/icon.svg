@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="50%" style="stop-color:#764ba2"/>
+      <stop offset="100%" style="stop-color:#f093fb"/>
+    </linearGradient>
+    <linearGradient id="sand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffeaa7"/>
+      <stop offset="100%" style="stop-color:#fdcb6e"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#74b9ff"/>
+      <stop offset="100%" style="stop-color:#0984e3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+
+  <!-- Water -->
+  <ellipse cx="256" cy="320" rx="200" ry="80" fill="url(#water)" opacity="0.9"/>
+
+  <!-- Sand -->
+  <ellipse cx="256" cy="380" rx="180" ry="60" fill="url(#sand)"/>
+
+  <!-- Sun -->
+  <circle cx="380" cy="120" r="50" fill="#fdcb6e"/>
+  <circle cx="380" cy="120" r="40" fill="#ffeaa7"/>
+
+  <!-- Sun rays -->
+  <g stroke="#fdcb6e" stroke-width="6" stroke-linecap="round">
+    <line x1="380" y1="50" x2="380" y2="30"/>
+    <line x1="380" y1="190" x2="380" y2="210"/>
+    <line x1="310" y1="120" x2="290" y2="120"/>
+    <line x1="450" y1="120" x2="470" y2="120"/>
+    <line x1="330" y1="70" x2="315" y2="55"/>
+    <line x1="430" y1="170" x2="445" y2="185"/>
+    <line x1="330" y1="170" x2="315" y2="185"/>
+    <line x1="430" y1="70" x2="445" y2="55"/>
+  </g>
+
+  <!-- Umbrella pole -->
+  <rect x="200" y="220" width="8" height="160" fill="#e17055" rx="4"/>
+
+  <!-- Umbrella top -->
+  <path d="M 120 230 Q 204 140 290 230 L 204 230 Z" fill="#e17055"/>
+  <path d="M 145 230 Q 204 165 265 230" fill="#d63031"/>
+
+  <!-- Wave lines -->
+  <path d="M 80 300 Q 120 280 160 300 Q 200 320 240 300 Q 280 280 320 300 Q 360 320 400 300 Q 440 280 480 300"
+        fill="none" stroke="white" stroke-width="4" opacity="0.6"/>
+  <path d="M 60 330 Q 100 310 140 330 Q 180 350 220 330 Q 260 310 300 330 Q 340 350 380 330 Q 420 310 460 330"
+        fill="none" stroke="white" stroke-width="3" opacity="0.4"/>
+
+  <!-- Beach towel -->
+  <rect x="260" y="350" width="100" height="60" rx="5" fill="#00cec9" transform="rotate(-10 310 380)"/>
+  <rect x="265" y="355" width="90" height="10" rx="3" fill="#81ecec" transform="rotate(-10 310 380)"/>
+  <rect x="265" y="385" width="90" height="10" rx="3" fill="#81ecec" transform="rotate(-10 310 380)"/>
+</svg>
