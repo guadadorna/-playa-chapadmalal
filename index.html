@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Chapa">
-    <meta name="description" content="Clima, mareas y surf en Chapadmalal">
+    <meta name="description" content="Clima, mareas y condiciones de playa en Chapadmalal">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,9 @@
             --text: #eaeaea;
             --text-muted: #a0a0a0;
             --glass: rgba(255,255,255,0.08);
+            --good: #00b894;
+            --ok: #fdcb6e;
+            --bad: #e94560;
         }
 
         * {
@@ -39,13 +42,17 @@
             background: var(--bg-dark);
             min-height: 100vh;
             color: var(--text);
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         /* Header */
         .header {
             padding: 20px 16px 10px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-dark);
+            z-index: 100;
         }
 
         .header h1 {
@@ -64,33 +71,10 @@
             margin-top: 4px;
         }
 
-        /* Tab Navigation */
-        .tabs {
-            display: flex;
-            margin: 0 16px;
-            background: var(--glass);
-            border-radius: 12px;
-            padding: 4px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            border-radius: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-        }
-
-        .tab.active {
-            background: var(--accent);
-            color: white;
-        }
-
-        .tab:not(.active) {
+        .last-update {
+            font-size: 0.7rem;
             color: var(--text-muted);
+            margin-top: 4px;
         }
 
         /* Content */
@@ -98,189 +82,223 @@
             padding: 16px;
         }
 
-        .tab-content {
-            display: none;
+        /* Alerta destacada */
+        .alert-banner {
+            background: linear-gradient(135deg, var(--accent) 0%, #c0392b 100%);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        .alert-banner.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .alert-banner .alert-icon {
+            font-size: 1.5rem;
         }
 
-        /* Hero Card */
-        .hero {
-            background: linear-gradient(135deg, var(--bg-card-alt) 0%, var(--bg-card) 100%);
+        .alert-banner .alert-text {
+            flex: 1;
+        }
+
+        .alert-banner .alert-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .alert-banner .alert-desc {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Main score card */
+        .main-score {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-alt) 100%);
             border-radius: 20px;
             padding: 24px;
             text-align: center;
             margin-bottom: 16px;
-            border: 1px solid var(--glass);
+            position: relative;
+            overflow: hidden;
         }
 
-        .hero .rating {
-            font-size: 4rem;
-            line-height: 1;
+        .main-score::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--teal) 0%, transparent 70%);
+            opacity: 0.1;
         }
 
-        .hero .score {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 8px 0;
-        }
-
-        .hero .score span {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .hero .label {
-            font-size: 1.1rem;
-            color: var(--teal);
-            font-weight: 500;
-        }
-
-        .hero .date {
+        .main-score .date {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 8px;
-            text-transform: capitalize;
+            margin-bottom: 8px;
         }
 
-        /* Quick Stats */
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: var(--glass);
-            border-radius: 14px;
-            padding: 14px 10px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .stat-card .icon {
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-        }
-
-        .stat-card .value {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .stat-card .label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* Tide Alert */
-        .tide-alert {
-            background: linear-gradient(135deg, var(--teal) 0%, #45b7aa 100%);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+        .main-score .score-row {
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
         }
 
-        .tide-alert .arrow {
-            font-size: 2.5rem;
+        .main-score .emoji {
+            font-size: 3.5rem;
+        }
+
+        .main-score .score-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--teal);
             line-height: 1;
         }
 
-        .tide-alert .info {
-            flex: 1;
+        .main-score .score-max {
+            font-size: 1.5rem;
+            color: var(--text-muted);
         }
 
-        .tide-alert .status {
+        .main-score .score-label {
+            font-size: 1.3rem;
             font-weight: 600;
-            font-size: 1.1rem;
+            margin-bottom: 16px;
         }
 
-        .tide-alert .tip {
-            font-size: 0.85rem;
-            opacity: 0.9;
+        .main-score .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .main-score .stat {
+            background: var(--glass);
+            padding: 10px 6px;
+            border-radius: 10px;
+        }
+
+        .main-score .stat-icon {
+            font-size: 1.2rem;
+            display: block;
+        }
+
+        .main-score .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
             margin-top: 4px;
         }
 
-        .tide-alert .next {
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-top: 6px;
+        .main-score .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
         }
 
-        /* Collapsible Sections */
-        .section {
+        /* Cards expandibles */
+        .card {
             background: var(--bg-card);
             border-radius: 16px;
             margin-bottom: 12px;
             overflow: hidden;
-            border: 1px solid var(--glass);
         }
 
-        .section-header {
-            padding: 14px 16px;
+        .card-header {
+            padding: 16px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             cursor: pointer;
-            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .section-header:active {
+        .card-header:active {
             background: var(--glass);
         }
 
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 500;
+        .card-title {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .section-toggle {
+        .card-title .icon {
+            font-size: 1.3rem;
+        }
+
+        .card-title .text {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .card-title .subtext {
+            font-size: 0.8rem;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+
+        .card-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-value {
+            text-align: right;
+        }
+
+        .card-value .main {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-value .main.good { color: var(--good); }
+        .card-value .main.ok { color: var(--ok); }
+        .card-value .main.bad { color: var(--bad); }
+
+        .card-value .sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .card-toggle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
             transition: transform 0.3s;
         }
 
-        .section.open .section-toggle {
+        .card.expanded .card-toggle {
             transform: rotate(180deg);
         }
 
-        .section-content {
+        .card-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: max-height 0.3s ease-out;
         }
 
-        .section.open .section-content {
-            max-height: 600px;
+        .card.expanded .card-content {
+            max-height: 1000px;
         }
 
-        .section-inner {
+        .card-inner {
             padding: 0 16px 16px;
         }
 
-        /* Hourly Scroll */
+        /* Hourly scroll */
         .hourly-scroll {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding: 4px 0 10px;
+            padding: 4px 0 8px;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
 
@@ -288,513 +306,346 @@
             display: none;
         }
 
-        .hour-card {
-            min-width: 65px;
+        .hour-item {
+            flex-shrink: 0;
             background: var(--glass);
             border-radius: 12px;
-            padding: 12px 8px;
+            padding: 10px 12px;
             text-align: center;
-            flex-shrink: 0;
+            min-width: 65px;
         }
 
-        .hour-card.now {
-            background: var(--accent);
-            color: white;
+        .hour-item.current {
+            background: var(--teal);
+            color: var(--bg-dark);
         }
 
-        .hour-card .time {
+        .hour-item .time {
             font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .hour-card.now .time {
-            color: rgba(255,255,255,0.8);
-        }
-
-        .hour-card .main {
-            font-size: 1.1rem;
             font-weight: 600;
         }
 
-        .hour-card .sub {
+        .hour-item .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 4px 0;
+        }
+
+        .hour-item .extra {
             font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 4px;
+            opacity: 0.8;
         }
 
-        .hour-card.now .sub {
-            color: rgba(255,255,255,0.7);
-        }
-
-        /* Tide Timeline */
+        /* Tide timeline */
         .tide-timeline {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .tide-item {
+        .tide-event {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
+            padding: 12px;
             background: var(--glass);
             border-radius: 10px;
         }
 
-        .tide-item .icon {
+        .tide-event.high {
+            border-left: 3px solid var(--teal);
+        }
+
+        .tide-event.low {
+            border-left: 3px solid var(--sand);
+        }
+
+        .tide-event.past {
+            opacity: 0.5;
+        }
+
+        .tide-event .tide-icon {
             font-size: 1.3rem;
         }
 
-        .tide-item .time {
-            font-weight: 600;
+        .tide-event .tide-info {
             flex: 1;
         }
 
-        .tide-item .type {
-            font-size: 0.8rem;
+        .tide-event .tide-type {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .tide-event .tide-desc {
+            font-size: 0.75rem;
             color: var(--text-muted);
         }
 
-        /* Forecast Days */
+        .tide-event .tide-time {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .tide-event .tide-height {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Forecast days */
         .forecast-days {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .day-row {
-            display: flex;
-            align-items: center;
-            padding: 12px;
+        .day-card {
             background: var(--glass);
             border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .day-header:active {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .day-left {
+            display: flex;
+            align-items: center;
             gap: 12px;
         }
 
-        .day-row .day {
-            width: 70px;
-            font-weight: 500;
-            font-size: 0.9rem;
+        .day-emoji {
+            font-size: 1.8rem;
         }
 
-        .day-row .emoji {
-            font-size: 1.3rem;
+        .day-name {
+            font-weight: 600;
         }
 
-        .day-row .details {
-            flex: 1;
-            font-size: 0.8rem;
+        .day-date {
+            font-size: 0.75rem;
             color: var(--text-muted);
         }
 
-        .day-row .score {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        /* SURF TAB STYLES */
-        .surf-hero {
-            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%);
-            border: 1px solid rgba(233, 69, 96, 0.3);
-        }
-
-        .surf-hero .rating {
-            color: var(--accent-soft);
-        }
-
-        .wave-display {
+        .day-right {
+            text-align: right;
             display: flex;
-            justify-content: center;
-            align-items: baseline;
+            align-items: center;
             gap: 8px;
-            margin: 10px 0;
         }
 
-        .wave-display .height {
-            font-size: 3rem;
+        .day-score {
+            font-size: 1.5rem;
             font-weight: 700;
         }
 
-        .wave-display .unit {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-        }
+        .day-score.good { color: var(--good); }
+        .day-score.ok { color: var(--ok); }
+        .day-score.bad { color: var(--bad); }
 
-        .wave-display .period {
-            font-size: 1rem;
-            color: var(--teal);
-        }
-
-        .surf-conditions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .surf-stat {
-            background: var(--glass);
-            border-radius: 14px;
-            padding: 14px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .surf-stat .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .surf-stat .value {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .surf-stat .detail {
+        .day-summary {
             font-size: 0.7rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            line-height: 1.3;
         }
 
-        .surf-stat.good .value { color: var(--teal); }
-        .surf-stat.ok .value { color: var(--sand); }
-        .surf-stat.bad .value { color: var(--accent); }
-
-        /* Best Hours */
-        .best-hours {
-            background: linear-gradient(90deg, rgba(78, 205, 196, 0.2) 0%, transparent 100%);
-            border-left: 3px solid var(--teal);
-            border-radius: 0 12px 12px 0;
-            padding: 12px 14px;
-            margin-bottom: 16px;
-        }
-
-        .best-hours .title {
+        .day-toggle {
             font-size: 0.8rem;
-            color: var(--teal);
-            margin-bottom: 4px;
+            color: var(--text-muted);
+            transition: transform 0.3s;
         }
 
-        .best-hours .hours {
-            font-weight: 600;
+        .day-card.expanded .day-toggle {
+            transform: rotate(180deg);
         }
 
-        /* Surf Hourly */
-        .surf-hour-card {
-            min-width: 75px;
-            background: var(--glass);
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-            flex-shrink: 0;
+        .day-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
 
-        .surf-hour-card.good {
-            border: 1px solid var(--teal);
-            background: rgba(78, 205, 196, 0.1);
+        .day-card.expanded .day-content {
+            max-height: 500px;
         }
 
-        .surf-hour-card .time {
-            font-size: 0.75rem;
+        .day-inner {
+            padding: 0 14px 14px;
+        }
+
+        .day-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass);
+            font-size: 0.85rem;
+        }
+
+        .day-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .day-detail-label {
             color: var(--text-muted);
         }
 
-        .surf-hour-card .wave {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 6px 0;
-        }
-
-        .surf-hour-card .wind {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .surf-hour-card .rating {
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        /* Disclaimer */
-        .disclaimer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            padding: 16px;
-            opacity: 0.7;
-        }
-
-        /* Loading */
+        /* Loading & Error */
         .loading {
             text-align: center;
             padding: 60px 20px;
         }
 
         .loading .spinner {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: 3px solid var(--glass);
             border-top-color: var(--teal);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Install Banner */
-        .install-banner {
-            display: none;
+        .error-card {
+            background: var(--accent);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        /* Refresh button */
+        .refresh-btn {
             position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--teal);
-            border-radius: 14px;
-            padding: 14px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--teal);
+            color: var(--bg-dark);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
             z-index: 100;
-            animation: slideUp 0.3s ease;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .refresh-btn:active {
+            transform: translateX(-50%) scale(0.95);
         }
 
-        .install-banner .text {
+        .refresh-btn:disabled {
+            opacity: 0.6;
+        }
+
+        /* API Key prompt */
+        .api-prompt {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .api-prompt h3 {
+            margin-bottom: 12px;
+            color: var(--sand);
+        }
+
+        .api-prompt p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .api-prompt input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--glass);
+            color: var(--text);
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
-        .install-banner button {
+        .api-prompt button {
             width: 100%;
             padding: 12px;
             background: var(--teal);
             color: var(--bg-dark);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.95rem;
             cursor: pointer;
         }
 
-        /* Refresh Button */
-        .refresh-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: var(--accent);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
-            z-index: 50;
-            transition: transform 0.2s;
-        }
-
-        .refresh-btn:active {
-            transform: scale(0.95);
-        }
-
-        .refresh-btn.loading {
-            animation: spin 1s linear infinite;
-        }
-
-        .last-update {
-            text-align: center;
-            font-size: 0.7rem;
+        /* Section headers */
+        .section-header {
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-muted);
-            padding: 8px;
-        }
-
-        @media (max-width: 360px) {
-            .quick-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 6px;
-            }
-            .stat-card {
-                padding: 10px 6px;
-            }
-            .stat-card .value {
-                font-size: 1.1rem;
-            }
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 0 12px;
+            padding-left: 4px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>CHAPA<span>DMALAL</span></h1>
-        <p class="location">📍 Costa Atlántica, Argentina</p>
+        <h1>🌊 <span>CHAPA</span></h1>
+        <p class="location">Chapadmalal, Buenos Aires</p>
+        <p class="last-update" id="lastUpdate"></p>
     </div>
 
-    <div class="tabs">
-        <div class="tab active" data-tab="playa">☀️ Playa</div>
-        <div class="tab" data-tab="surf">🏄 Surf</div>
-    </div>
-
-    <div class="content">
-        <!-- PLAYA TAB -->
-        <div id="playa" class="tab-content active">
-            <div id="playaContent">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Cargando condiciones...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SURF TAB -->
-        <div id="surf" class="tab-content">
-            <div id="surfContent">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Cargando oleaje...</p>
-                </div>
-            </div>
+    <div class="content" id="content">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando condiciones...</p>
         </div>
     </div>
 
-    <div id="installBanner" class="install-banner">
-        <p class="text">📱 Agregá Chapa a tu inicio</p>
-        <button onclick="installApp()">Instalar App</button>
-    </div>
-
-    <button class="refresh-btn" onclick="loadAllData()" id="refreshBtn">↻</button>
-
-    <p class="last-update" id="lastUpdate"></p>
+    <button class="refresh-btn" onclick="loadAllData()" id="refreshBtn">
+        🔄 Actualizar
+    </button>
 
     <script>
         // =====================================================
-        // CONFIG
+        // CONFIGURACIÓN
         // =====================================================
         const CONFIG = {
             lat: -38.176,
             lon: -57.645,
             timezone: 'America/Argentina/Buenos_Aires',
-            // Chapadmalal: mejor con swell del SW/S/SE, viento offshore del N/NO/O
-            bestSwellDirs: [180, 225, 270], // S, SW, W
-            offshoreWindDirs: [315, 0, 45, 270], // NO, N, NE, O
+            // Horas de playa para calcular índice
+            beachHourStart: 9,
+            beachHourEnd: 19
         };
 
+        // WorldTides API Key - se guarda en localStorage
+        let WORLDTIDES_KEY = localStorage.getItem('worldtides_key') || '';
+
+        // Estado global
         let weatherData = null;
-        let marineData = null;
-        let deferredPrompt = null;
+        let tidesData = null;
 
         // =====================================================
-        // TABS
+        // UTILIDADES
         // =====================================================
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
-            });
-        });
 
-        // =====================================================
-        // COLLAPSIBLE SECTIONS
-        // =====================================================
-        function toggleSection(el) {
-            el.closest('.section').classList.toggle('open');
-        }
-
-        // =====================================================
-        // PWA
-        // =====================================================
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBanner').style.display = 'block';
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    document.getElementById('installBanner').style.display = 'none';
-                    deferredPrompt = null;
-                });
-            }
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
-
-        // =====================================================
-        // TIDE CALCULATIONS
-        // =====================================================
-        function getMoonPosition(date) {
-            const daysSinceJ2000 = (date.getTime() / 86400000) - 10957.5;
-            const L = (218.316 + 13.176396 * daysSinceJ2000) % 360;
-            const M = (134.963 + 13.064993 * daysSinceJ2000) % 360;
-            const moonLon = L + 6.289 * Math.sin(M * Math.PI / 180);
-            return { longitude: moonLon % 360 };
-        }
-
-        function getTidalPhase(date, longitude) {
-            const moon = getMoonPosition(date);
-            const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
-            const daysSinceJ2000 = (date.getTime() - J2000) / 86400000;
-            const GMST = (280.46061837 + 360.98564736629 * daysSinceJ2000) % 360;
-            const LST = (GMST + longitude) % 360;
-            let hourAngle = (LST - moon.longitude) % 360;
-            if (hourAngle < 0) hourAngle += 360;
-            return (hourAngle * 2) % 360;
-        }
-
-        function getTideStatus(date) {
-            const phase = getTidalPhase(date, CONFIG.lon);
-            const isRising = (phase > 90 && phase <= 180) || (phase > 270 && phase <= 360);
-            return { isRising, phase };
-        }
-
-        function calculateTidesForDays(startDate, numDays) {
-            const tides = [];
-            let searchDate = new Date(startDate);
-            searchDate.setHours(0, 0, 0, 0);
-            const increment = 15 * 60000;
-            let lastPhase = getTidalPhase(searchDate, CONFIG.lon);
-            const endDate = new Date(startDate);
-            endDate.setDate(endDate.getDate() + numDays);
-
-            while (searchDate < endDate) {
-                const currentPhase = getTidalPhase(searchDate, CONFIG.lon);
-                if ((lastPhase > 350 && currentPhase < 10) ||
-                    (lastPhase < 180 && currentPhase >= 180 && lastPhase > 170)) {
-                    tides.push({ time: new Date(searchDate), type: 'high' });
-                }
-                if ((lastPhase < 90 && currentPhase >= 90) ||
-                    (lastPhase < 270 && currentPhase >= 270 && lastPhase > 180)) {
-                    tides.push({ time: new Date(searchDate), type: 'low' });
-                }
-                lastPhase = currentPhase;
-                searchDate = new Date(searchDate.getTime() + increment);
-            }
-            tides.sort((a, b) => a.time - b.time);
-            return tides;
-        }
-
-        function getTidesForDay(allTides, dayDate) {
-            const dayStart = new Date(dayDate); dayStart.setHours(0, 0, 0, 0);
-            const dayEnd = new Date(dayDate); dayEnd.setHours(23, 59, 59, 999);
-            return allTides.filter(t => t.time >= dayStart && t.time <= dayEnd);
-        }
-
-        // =====================================================
-        // UTILITIES
-        // =====================================================
         function formatTime(date) {
             return date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
         }
@@ -803,599 +654,794 @@
             return date.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
         }
 
-        function formatDayShort(date) {
+        function formatDateShort(date) {
             return date.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric' });
         }
 
-        function getWindDir(degrees) {
-            const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-            return dirs[Math.round(degrees / 45) % 8];
+        function getWindDirection(degrees) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+            const index = Math.round(degrees / 45) % 8;
+            return directions[index];
         }
 
-        function getWindArrow(degrees) {
-            const arrows = ['↓', '↙', '←', '↖', '↑', '↗', '→', '↘'];
-            return arrows[Math.round(degrees / 45) % 8];
+        function isSouthWind(dir) {
+            return dir >= 135 && dir <= 225;
         }
 
-        // =====================================================
-        // VIENTO SUR / SUDESTADA DETECTION
-        // =====================================================
-        function isSouthWind(windDir) {
-            // Sur: 135° - 225° (SE, S, SW)
-            return windDir >= 135 && windDir <= 225;
-        }
-
-        function getSudestadaRisk(windSpeed, windDir, rain) {
-            const isSouth = isSouthWind(windDir);
-            const isSudeste = windDir >= 112 && windDir <= 157; // SE específico
-
-            if (isSudeste && windSpeed >= 40) {
-                return { level: 'alta', emoji: '🌊⚠️', text: 'Sudestada fuerte', color: '#e94560' };
-            }
-            if (isSouth && windSpeed >= 35) {
-                return { level: 'media', emoji: '💨⚠️', text: 'Viento sur fuerte', color: '#e94560' };
-            }
-            if (isSouth && windSpeed >= 25) {
-                return { level: 'baja', emoji: '🌬️', text: 'Viento sur', color: '#f7d794' };
-            }
-            if (isSouth && windSpeed >= 15) {
-                return { level: 'leve', emoji: '↓', text: 'Brisa del sur', color: '#a0a0a0' };
-            }
-            return null;
+        function isSudestada(windSpeed, windDir) {
+            const isSudeste = windDir >= 112 && windDir <= 157;
+            return isSudeste && windSpeed >= 35;
         }
 
         // =====================================================
-        // RATINGS
+        // DESCRIPCIONES HUMANAS
         // =====================================================
-        function getBeachIndex(temp, wind, rain, windDir) {
-            let score = 0;
 
-            // Penalización fuerte por viento sur
-            const isSouth = isSouthWind(windDir);
-
-            // Viento (considerando dirección)
-            if (isSouth) {
-                // Viento sur: penalizar más
-                if (wind <= 10) score += 3;
-                else if (wind <= 20) score += 1;
-                else score += 0; // Viento sur fuerte = 0 puntos
-            } else {
-                // Otros vientos
-                if (wind <= 15) score += 4;
-                else if (wind <= 25) score += 3;
-                else if (wind <= 35) score += 1;
-            }
-
-            if (rain === 0) score += 3;
-            else if (rain < 30) score += 2;
-
-            if (temp >= 25 && temp <= 32) score += 3;
-            else if ((temp >= 20 && temp < 25) || (temp > 32 && temp <= 36)) score += 2;
-            else if (temp >= 15 && temp < 20) score += 1;
-
-            // Penalización extra por sudestada conditions
-            if (isSouth && wind >= 30 && rain > 30) {
-                score = Math.max(1, score - 3);
-            }
-
-            return Math.max(1, Math.min(10, score));
-        }
-
-        function getBeachInfo(score, sudestada) {
-            if (sudestada && sudestada.level === 'alta') {
-                return { emoji: '🌊', label: 'Sudestada - No vayas', color: '#e94560' };
-            }
-            if (sudestada && sudestada.level === 'media') {
-                return { emoji: '💨', label: 'Viento sur fuerte', color: '#e94560' };
-            }
-            if (score >= 8) return { emoji: '🏖️', label: 'Día perfecto', color: '#4ecdc4' };
-            if (score >= 6) return { emoji: '😎', label: 'Buen día', color: '#f7d794' };
-            if (score >= 4) return { emoji: '🌥️', label: 'Pasable', color: '#a0a0a0' };
-            return { emoji: '🌧️', label: 'Quedáte en casa', color: '#e94560' };
-        }
-
-        function getSurfRating(waveHeight, period, windSpeed, windDir) {
-            let score = 0;
-
-            // Wave height (0.5-2m ideal for Chapa)
-            if (waveHeight >= 0.8 && waveHeight <= 1.8) score += 4;
-            else if (waveHeight >= 0.5 && waveHeight < 0.8) score += 2;
-            else if (waveHeight > 1.8 && waveHeight <= 2.5) score += 2;
-            else if (waveHeight > 0.3) score += 1;
-
-            // Period (longer = better)
-            if (period >= 12) score += 3;
-            else if (period >= 9) score += 2;
-            else if (period >= 6) score += 1;
-
-            // Wind (offshore or light)
-            const isOffshore = CONFIG.offshoreWindDirs.some(d => Math.abs(d - windDir) < 45 || Math.abs(d - windDir) > 315);
-            if (windSpeed <= 10 && isOffshore) score += 3;
-            else if (windSpeed <= 15) score += 2;
-            else if (windSpeed <= 25) score += 1;
-
-            if (score >= 8) return { emoji: '🤙', label: 'Épico', color: '#4ecdc4' };
-            if (score >= 6) return { emoji: '🔥', label: 'Muy bueno', color: '#f7d794' };
-            if (score >= 4) return { emoji: '🌊', label: 'Surfeable', color: '#a0a0a0' };
-            if (score >= 2) return { emoji: '😕', label: 'Flojo', color: '#e94560' };
-            return { emoji: '💤', label: 'Flat', color: '#666' };
-        }
-
-        function getWindQuality(speed, dir) {
-            const isOffshore = CONFIG.offshoreWindDirs.some(d => Math.abs(d - dir) < 45 || Math.abs(d - dir) > 315);
-            if (speed <= 8 && isOffshore) return { text: 'Offshore 🤌', class: 'good' };
-            if (speed <= 12) return { text: 'Suave', class: 'good' };
-            if (speed <= 20) return { text: 'Moderado', class: 'ok' };
-            return { text: 'Fuerte', class: 'bad' };
-        }
-
-        // Interpretación humana del viento para playa
         function getWindDescription(speed, dir) {
             const isSouth = isSouthWind(dir);
 
             if (isSouth) {
-                // Viento sur - siempre mencionar que es frío
-                if (speed <= 10) return { text: 'Brisa fría', emoji: '🌬️', class: 'ok' };
-                if (speed <= 20) return { text: 'Viento frío', emoji: '🥶', class: 'bad' };
-                if (speed <= 30) return { text: 'Muy ventoso y frío', emoji: '💨', class: 'bad' };
-                return { text: 'Temporal', emoji: '🌊', class: 'bad' };
+                if (speed <= 10) return { text: 'Brisa del sur', emoji: '🌬️', class: 'ok' };
+                if (speed <= 20) return { text: 'Viento sur frío', emoji: '🥶', class: 'bad' };
+                if (speed <= 30) return { text: 'Sur fuerte', emoji: '💨', class: 'bad' };
+                return { text: 'Temporal del sur', emoji: '🌊', class: 'bad' };
             } else {
-                // Otros vientos
-                if (speed <= 10) return { text: 'Tranquilo', emoji: '😌', class: 'good' };
-                if (speed <= 20) return { text: 'Ventoso', emoji: '🍃', class: 'ok' };
-                if (speed <= 30) return { text: 'Muy ventoso', emoji: '💨', class: 'bad' };
-                return { text: 'Volás', emoji: '🌪️', class: 'bad' };
+                if (speed <= 10) return { text: 'Calma', emoji: '😌', class: 'good' };
+                if (speed <= 20) return { text: 'Brisa suave', emoji: '🍃', class: 'good' };
+                if (speed <= 30) return { text: 'Ventoso', emoji: '💨', class: 'ok' };
+                return { text: 'Muy ventoso', emoji: '🌪️', class: 'bad' };
             }
         }
 
-        // =====================================================
-        // API
-        // =====================================================
-        async function fetchWeather() {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,wind_direction_10m&timezone=${CONFIG.timezone}&forecast_days=5`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Weather API error');
-            return res.json();
+        function getTempDescription(temp, apparent) {
+            const diff = apparent - temp;
+            let base = '';
+            let emoji = '';
+
+            if (temp >= 30) { base = 'Muy caluroso'; emoji = '🥵'; }
+            else if (temp >= 26) { base = 'Calor ideal'; emoji = '☀️'; }
+            else if (temp >= 22) { base = 'Agradable'; emoji = '😊'; }
+            else if (temp >= 18) { base = 'Templado'; emoji = '🌤️'; }
+            else if (temp >= 14) { base = 'Fresco'; emoji = '🧥'; }
+            else { base = 'Frío'; emoji = '🥶'; }
+
+            if (diff <= -3) base += ' (ST más frío)';
+            else if (diff >= 3) base += ' (ST más calor)';
+
+            return { text: base, emoji };
         }
 
-        async function fetchMarine() {
-            const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&hourly=wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,swell_wave_direction&timezone=${CONFIG.timezone}&forecast_days=5`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Marine API error');
-            return res.json();
+        function getCloudDescription(cover) {
+            if (cover <= 10) return { text: 'Despejado', emoji: '☀️' };
+            if (cover <= 30) return { text: 'Poco nublado', emoji: '🌤️' };
+            if (cover <= 60) return { text: 'Parcialmente nublado', emoji: '⛅' };
+            if (cover <= 85) return { text: 'Nublado', emoji: '☁️' };
+            return { text: 'Muy nublado', emoji: '🌫️' };
+        }
+
+        function getRainDescription(prob, precip) {
+            if (prob === 0 && precip === 0) return { text: 'Sin lluvia', emoji: '✨', class: 'good' };
+            if (prob <= 20) return { text: 'Muy improbable', emoji: '🌤️', class: 'good' };
+            if (prob <= 40) return { text: 'Poco probable', emoji: '🌥️', class: 'ok' };
+            if (prob <= 60) return { text: 'Posible', emoji: '🌦️', class: 'ok' };
+            if (prob <= 80) return { text: 'Probable', emoji: '🌧️', class: 'bad' };
+            return { text: 'Muy probable', emoji: '⛈️', class: 'bad' };
+        }
+
+        function getUVDescription(uv) {
+            if (uv <= 2) return { text: 'Bajo', emoji: '🟢', tip: 'Sin protección' };
+            if (uv <= 5) return { text: 'Moderado', emoji: '🟡', tip: 'Protector recomendado' };
+            if (uv <= 7) return { text: 'Alto', emoji: '🟠', tip: 'Protector necesario' };
+            if (uv <= 10) return { text: 'Muy alto', emoji: '🔴', tip: 'Evitar sol 11-16hs' };
+            return { text: 'Extremo', emoji: '🟣', tip: 'No exponerse' };
         }
 
         // =====================================================
-        // PROCESS DATA
+        // ÍNDICE DE PLAYA (calculado sobre HORAS DE PLAYA)
         // =====================================================
-        function processData() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            const todayStr = now.toISOString().split('T')[0];
 
-            // Find current index
-            const idx = weatherData.hourly.time.findIndex(t => {
-                const d = new Date(t);
-                return d.toISOString().split('T')[0] === todayStr && d.getHours() === currentHour;
+        function calculateBeachIndex(dayData) {
+            // Filtrar solo horas de playa (9-19hs)
+            const beachHours = dayData.hours.filter(h =>
+                h.hour >= CONFIG.beachHourStart && h.hour <= CONFIG.beachHourEnd
+            );
+
+            if (beachHours.length === 0) return 1;
+
+            let totalScore = 0;
+            let count = beachHours.length;
+
+            beachHours.forEach(h => {
+                let hourScore = 10;
+
+                // Temperatura (ideal 24-30°C) - máx 3 puntos de penalización
+                if (h.temp < 18) hourScore -= 3;
+                else if (h.temp < 22) hourScore -= 2;
+                else if (h.temp < 24) hourScore -= 1;
+                else if (h.temp > 34) hourScore -= 2;
+                else if (h.temp > 30) hourScore -= 1;
+
+                // Sensación térmica muy diferente
+                if (h.apparent < h.temp - 4) hourScore -= 1;
+
+                // Viento - máx 4 puntos de penalización
+                const windPenalty = isSouthWind(h.windDir) ? 1.5 : 1; // Sur penaliza más
+                if (h.wind > 40) hourScore -= 4 * windPenalty;
+                else if (h.wind > 30) hourScore -= 3 * windPenalty;
+                else if (h.wind > 20) hourScore -= 2 * windPenalty;
+                else if (h.wind > 15) hourScore -= 1 * windPenalty;
+
+                // Ráfagas peligrosas
+                if (h.gusts > 50) hourScore -= 2;
+                else if (h.gusts > 40) hourScore -= 1;
+
+                // Lluvia - máx 3 puntos de penalización
+                if (h.rainProb > 70) hourScore -= 3;
+                else if (h.rainProb > 50) hourScore -= 2;
+                else if (h.rainProb > 30) hourScore -= 1;
+
+                // Nubosidad - máx 2 puntos de penalización
+                if (h.clouds > 85) hourScore -= 2;
+                else if (h.clouds > 60) hourScore -= 1;
+
+                totalScore += Math.max(0, hourScore);
             });
 
-            // Current conditions
-            const current = {
-                temp: weatherData.hourly.temperature_2m[idx],
-                wind: weatherData.hourly.wind_speed_10m[idx],
-                windDir: weatherData.hourly.wind_direction_10m[idx],
-                rain: weatherData.hourly.precipitation_probability[idx],
-                waveHeight: marineData?.hourly.wave_height[idx] || 0,
-                wavePeriod: marineData?.hourly.wave_period[idx] || 0,
-                waveDir: marineData?.hourly.wave_direction[idx] || 0,
-                swellHeight: marineData?.hourly.swell_wave_height?.[idx] || 0,
-                swellPeriod: marineData?.hourly.swell_wave_period?.[idx] || 0,
-            };
+            // Promedio y escalar a 1-10
+            const avg = totalScore / count;
+            return Math.max(1, Math.min(10, Math.round(avg)));
+        }
 
-            // Hourly for today (next 12 hours)
-            const hourly = [];
-            for (let i = idx; i < Math.min(idx + 14, weatherData.hourly.time.length); i++) {
-                const h = new Date(weatherData.hourly.time[i]).getHours();
-                hourly.push({
-                    hour: h,
-                    isNow: i === idx,
-                    temp: weatherData.hourly.temperature_2m[i],
-                    wind: weatherData.hourly.wind_speed_10m[i],
-                    windDir: weatherData.hourly.wind_direction_10m[i],
-                    rain: weatherData.hourly.precipitation_probability[i],
-                    waveHeight: marineData?.hourly.wave_height[i] || 0,
-                    wavePeriod: marineData?.hourly.wave_period[i] || 0,
-                    waveDir: marineData?.hourly.wave_direction[i] || 0,
-                });
+        function getIndexInfo(score) {
+            if (score >= 8) return { emoji: '🏖️', label: 'Excelente', class: 'good' };
+            if (score >= 6) return { emoji: '😎', label: 'Bueno', class: 'good' };
+            if (score >= 4) return { emoji: '🌥️', label: 'Regular', class: 'ok' };
+            if (score >= 2) return { emoji: '😕', label: 'Malo', class: 'bad' };
+            return { emoji: '❌', label: 'No ir', class: 'bad' };
+        }
+
+        // =====================================================
+        // FETCH DE DATOS
+        // =====================================================
+
+        async function fetchWeather() {
+            const params = [
+                'temperature_2m',
+                'apparent_temperature',
+                'precipitation_probability',
+                'precipitation',
+                'cloud_cover',
+                'wind_speed_10m',
+                'wind_direction_10m',
+                'wind_gusts_10m',
+                'uv_index',
+                'visibility'
+            ].join(',');
+
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&hourly=${params}&daily=sunrise,sunset&timezone=${CONFIG.timezone}&forecast_days=7`;
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error al obtener clima');
+            return response.json();
+        }
+
+        async function fetchTides() {
+            if (!WORLDTIDES_KEY) {
+                console.log('Sin API key de WorldTides, usando estimación');
+                return null;
             }
 
-            // Daily averages
+            try {
+                const url = `https://www.worldtides.info/api/v3?extremes&lat=${CONFIG.lat}&lon=${CONFIG.lon}&days=7&key=${WORLDTIDES_KEY}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Error WorldTides');
+                const data = await response.json();
+
+                if (data.error) {
+                    console.warn('WorldTides error:', data.error);
+                    return null;
+                }
+
+                return data;
+            } catch (e) {
+                console.warn('Error fetching tides:', e);
+                return null;
+            }
+        }
+
+        // =====================================================
+        // ESTIMACIÓN DE MAREAS (fallback si no hay API)
+        // =====================================================
+
+        function estimateTides(startDate, numDays) {
+            const tides = [];
+            const msPerHour = 3600000;
+
+            // Período entre mareas altas: ~12h 25min
+            const tidalPeriod = 12.42 * msPerHour;
+
+            // Buscar aproximación basada en fase lunar
+            const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+            const daysSinceJ2000 = (startDate.getTime() - J2000) / 86400000;
+
+            // Hora de primera marea alta aproximada
+            const moonPhase = (daysSinceJ2000 * 13.176396) % 360;
+            const offsetHours = (moonPhase / 360) * 12.42;
+
+            let currentTime = new Date(startDate);
+            currentTime.setHours(0, 0, 0, 0);
+            currentTime = new Date(currentTime.getTime() + offsetHours * msPerHour);
+
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + numDays);
+
+            let isHigh = true;
+
+            while (currentTime < endDate) {
+                tides.push({
+                    time: new Date(currentTime),
+                    type: isHigh ? 'high' : 'low',
+                    height: isHigh ? 1.2 + Math.random() * 0.3 : 0.3 + Math.random() * 0.2,
+                    estimated: true
+                });
+
+                currentTime = new Date(currentTime.getTime() + tidalPeriod / 2);
+                isHigh = !isHigh;
+            }
+
+            return tides;
+        }
+
+        // =====================================================
+        // PROCESAMIENTO DE DATOS
+        // =====================================================
+
+        function processWeatherByDay(data) {
             const days = {};
-            weatherData.hourly.time.forEach((time, i) => {
+            const now = new Date();
+
+            data.hourly.time.forEach((time, i) => {
                 const date = new Date(time);
                 const dayKey = date.toDateString();
-                const hour = date.getHours();
 
                 if (!days[dayKey]) {
-                    days[dayKey] = { date, temps: [], winds: [], rains: [], waves: [], periods: [] };
+                    days[dayKey] = {
+                        date: date,
+                        hours: [],
+                        maxTemp: -Infinity,
+                        minTemp: Infinity,
+                        maxWind: 0,
+                        maxGusts: 0,
+                        maxRainProb: 0,
+                        avgClouds: 0,
+                        maxUV: 0,
+                        hasSouthWind: false,
+                        hasSudestada: false
+                    };
                 }
 
-                if (hour >= 8 && hour <= 20) {
-                    days[dayKey].temps.push(weatherData.hourly.temperature_2m[i]);
-                    days[dayKey].winds.push(weatherData.hourly.wind_speed_10m[i]);
-                    days[dayKey].rains.push(weatherData.hourly.precipitation_probability[i]);
-                    if (marineData) {
-                        days[dayKey].waves.push(marineData.hourly.wave_height[i] || 0);
-                        days[dayKey].periods.push(marineData.hourly.wave_period[i] || 0);
-                    }
-                }
-            });
-
-            const dailyData = Object.values(days).map(d => {
-                // Calcular viento predominante del día
-                const windDirs = [];
-                weatherData.hourly.time.forEach((time, i) => {
-                    const date = new Date(time);
-                    if (date.toDateString() === d.date.toDateString() && date.getHours() >= 8 && date.getHours() <= 20) {
-                        windDirs.push(weatherData.hourly.wind_direction_10m[i]);
-                    }
-                });
-                const avgWindDir = windDirs.length ? windDirs.reduce((a, b) => a + b, 0) / windDirs.length : 0;
-
-                return {
-                    date: d.date,
-                    avgTemp: d.temps.reduce((a, b) => a + b, 0) / d.temps.length,
-                    maxWind: Math.max(...d.winds),
-                    maxRain: Math.max(...d.rains),
-                    avgWave: d.waves.length ? d.waves.reduce((a, b) => a + b, 0) / d.waves.length : 0,
-                    avgPeriod: d.periods.length ? d.periods.reduce((a, b) => a + b, 0) / d.periods.length : 0,
-                    avgWindDir: avgWindDir,
-                    hasSouthWind: isSouthWind(avgWindDir),
+                const hourData = {
+                    hour: date.getHours(),
+                    time: date,
+                    temp: data.hourly.temperature_2m[i],
+                    apparent: data.hourly.apparent_temperature[i],
+                    rainProb: data.hourly.precipitation_probability[i],
+                    rain: data.hourly.precipitation[i],
+                    clouds: data.hourly.cloud_cover[i],
+                    wind: data.hourly.wind_speed_10m[i],
+                    windDir: data.hourly.wind_direction_10m[i],
+                    gusts: data.hourly.wind_gusts_10m[i],
+                    uv: data.hourly.uv_index[i],
+                    visibility: data.hourly.visibility[i],
+                    isCurrent: date.getHours() === now.getHours() && date.toDateString() === now.toDateString()
                 };
+
+                days[dayKey].hours.push(hourData);
+
+                // Solo considerar horas diurnas para stats
+                if (hourData.hour >= 8 && hourData.hour <= 20) {
+                    days[dayKey].maxTemp = Math.max(days[dayKey].maxTemp, hourData.temp);
+                    days[dayKey].minTemp = Math.min(days[dayKey].minTemp, hourData.temp);
+                    days[dayKey].maxWind = Math.max(days[dayKey].maxWind, hourData.wind);
+                    days[dayKey].maxGusts = Math.max(days[dayKey].maxGusts, hourData.gusts);
+                    days[dayKey].maxRainProb = Math.max(days[dayKey].maxRainProb, hourData.rainProb);
+                    days[dayKey].maxUV = Math.max(days[dayKey].maxUV, hourData.uv);
+
+                    if (isSouthWind(hourData.windDir)) days[dayKey].hasSouthWind = true;
+                    if (isSudestada(hourData.wind, hourData.windDir)) days[dayKey].hasSudestada = true;
+                }
             });
 
-            // Tides
-            const allTides = calculateTidesForDays(now, 5);
-            const tideStatus = getTideStatus(now);
-            const nextTide = allTides.find(t => t.time > now);
-            const todayTides = getTidesForDay(allTides, now);
+            // Calcular índice de playa para cada día
+            Object.values(days).forEach(day => {
+                const beachHours = day.hours.filter(h => h.hour >= 8 && h.hour <= 20);
+                day.avgClouds = beachHours.reduce((sum, h) => sum + h.clouds, 0) / beachHours.length;
+                day.beachIndex = calculateBeachIndex(day);
+            });
 
-            return { current, hourly, dailyData, tideStatus, nextTide, todayTides, allTides };
+            return Object.values(days);
         }
 
-        // =====================================================
-        // RENDER PLAYA
-        // =====================================================
-        function renderPlaya(data) {
-            const { current, hourly, dailyData, tideStatus, nextTide, todayTides, allTides } = data;
-            const sudestada = getSudestadaRisk(current.wind, current.windDir, current.rain);
-            const beachScore = getBeachIndex(current.temp, current.wind, current.rain, current.windDir);
-            const beachInfo = getBeachInfo(beachScore, sudestada);
-            const now = new Date();
-
-            const tideTip = tideStatus.isRising
-                ? 'Poné la sombrilla lejos del agua'
-                : 'Tranqui, el agua está retrocediendo';
-
-            // Descripción del viento
-            const windDesc = getWindDescription(current.wind, current.windDir);
-
-            // Alerta de viento sur
-            let southWindAlert = '';
-            if (sudestada) {
-                const alertStyle = sudestada.level === 'alta' || sudestada.level === 'media'
-                    ? 'background: linear-gradient(135deg, #e94560 0%, #c0392b 100%);'
-                    : 'background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);';
-                southWindAlert = `
-                    <div class="tide-alert" style="${alertStyle}; color: white;">
-                        <div class="arrow">${sudestada.emoji}</div>
-                        <div class="info">
-                            <div class="status">${sudestada.text}</div>
-                            <div class="tip">${sudestada.level === 'alta'
-                                ? 'Evitá la playa. El mar puede crecer y hay riesgo.'
-                                : sudestada.level === 'media'
-                                ? 'Viento frío y fuerte. Muy incómodo en la playa.'
-                                : 'Viento fresco del sur. Llevá abrigo.'}</div>
-                            <div class="next">Viento ${getWindDir(current.windDir)} a ${Math.round(current.wind)} km/h</div>
-                        </div>
-                    </div>
-                `;
+        function processTides(tidesData, estimatedTides) {
+            if (tidesData && tidesData.extremes) {
+                return tidesData.extremes.map(t => ({
+                    time: new Date(t.date),
+                    type: t.type === 'High' ? 'high' : 'low',
+                    height: t.height,
+                    estimated: false
+                }));
             }
+            return estimatedTides;
+        }
 
-            let html = `
-                <div class="hero">
-                    <div class="rating">${beachInfo.emoji}</div>
-                    <div class="score">${beachScore}<span>/10</span></div>
-                    <div class="label" style="color: ${beachInfo.color}">${beachInfo.label}</div>
-                    <div class="date">${formatDate(now)}</div>
-                </div>
+        function getTidesForDay(allTides, dayDate) {
+            const dayStart = new Date(dayDate);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(dayDate);
+            dayEnd.setHours(23, 59, 59, 999);
 
-                ${southWindAlert}
-
-                <div class="quick-stats">
-                    <div class="stat-card">
-                        <div class="icon">🌡️</div>
-                        <div class="value">${Math.round(current.temp)}°</div>
-                        <div class="label">${current.temp >= 28 ? 'Calor' : current.temp >= 22 ? 'Agradable' : current.temp >= 18 ? 'Fresco' : 'Frío'}</div>
-                    </div>
-                    <div class="stat-card ${windDesc.class}" ${windDesc.class === 'bad' ? 'style="border: 1px solid var(--accent);"' : ''}>
-                        <div class="icon">${windDesc.emoji}</div>
-                        <div class="value">${windDesc.text}</div>
-                        <div class="label">${Math.round(current.wind)} km/h</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon">${current.rain > 50 ? '🌧️' : current.rain > 20 ? '🌦️' : '☀️'}</div>
-                        <div class="value">${current.rain > 50 ? 'Llueve' : current.rain > 20 ? 'Puede llover' : 'Seco'}</div>
-                        <div class="label">${current.rain}% prob.</div>
-                    </div>
-                </div>
-
-                <div class="tide-alert">
-                    <div class="arrow">${tideStatus.isRising ? '↑' : '↓'}</div>
-                    <div class="info">
-                        <div class="status">Marea ${tideStatus.isRising ? 'subiendo' : 'bajando'}</div>
-                        <div class="tip">${tideTip}</div>
-                        ${nextTide ? `<div class="next">${nextTide.type === 'high' ? 'Máxima' : 'Mínima'} a las ${formatTime(nextTide.time)}</div>` : ''}
-                    </div>
-                </div>
-
-                <div class="section open">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-title">⏰ Por hora</span>
-                        <span class="section-toggle">▼</span>
-                    </div>
-                    <div class="section-content">
-                        <div class="section-inner">
-                            <div class="hourly-scroll">
-                                ${hourly.slice(0, 12).map(h => {
-                                    const hWind = getWindDescription(h.wind, h.windDir);
-                                    const isBad = hWind.class === 'bad';
-                                    const cardStyle = isBad && !h.isNow ? 'border: 1px solid var(--accent);' : '';
-                                    return `
-                                    <div class="hour-card ${h.isNow ? 'now' : ''}" style="${cardStyle}">
-                                        <div class="time">${h.isNow ? 'Ahora' : h.hour + ':00'}</div>
-                                        <div class="main">${Math.round(h.temp)}°</div>
-                                        <div class="sub">${hWind.emoji}</div>
-                                    </div>
-                                `}).join('')}
-                            </div>
-                            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px;">
-                                😌 Tranquilo · 🍃 Ventoso · 🥶 Frío del sur · 💨 Fuerte
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                ${(() => {
-                    // Solo mareas que quedan del día
-                    const remainingTides = todayTides.filter(t => t.time > now);
-                    if (remainingTides.length === 0) return '';
-
-                    return `
-                    <div class="section">
-                        <div class="section-header" onclick="toggleSection(this)">
-                            <span class="section-title">🌊 Próximas mareas</span>
-                            <span class="section-toggle">▼</span>
-                        </div>
-                        <div class="section-content">
-                            <div class="section-inner">
-                                <div class="tide-timeline">
-                                    ${remainingTides.map(t => {
-                                        const isMax = t.type === 'high';
-                                        return `
-                                        <div class="tide-item ${t.type}">
-                                            <span class="icon">${isMax ? '🔺' : '🔻'}</span>
-                                            <div style="flex: 1;">
-                                                <span class="time">${formatTime(t.time)}</span>
-                                                <span class="type" style="display: block; font-size: 0.75rem; opacity: 0.8;">${isMax ? 'Menos playa' : 'Más playa'}</span>
-                                            </div>
-                                        </div>
-                                    `}).join('')}
-                                </div>
-                                <p style="font-size: 0.65rem; color: var(--text-muted); margin-top: 12px; text-align: center; opacity: 0.7;">
-                                    Horarios aproximados
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                })()}
-
-                <div class="section">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-title">📅 Próximos días</span>
-                        <span class="section-toggle">▼</span>
-                    </div>
-                    <div class="section-content">
-                        <div class="section-inner">
-                            <div class="forecast-days">
-                                ${dailyData.slice(1, 5).map(d => {
-                                    const daySudestada = getSudestadaRisk(d.maxWind, d.avgWindDir, d.maxRain);
-                                    const score = getBeachIndex(d.avgTemp, d.maxWind, d.maxRain, d.avgWindDir);
-                                    const info = getBeachInfo(score, daySudestada);
-                                    const southIndicator = d.hasSouthWind ? ' 🔻' : '';
-                                    return `
-                                        <div class="day-row" ${d.hasSouthWind ? 'style="border-left: 3px solid var(--accent);"' : ''}>
-                                            <span class="day">${formatDayShort(d.date)}</span>
-                                            <span class="emoji">${info.emoji}</span>
-                                            <span class="details">${Math.round(d.avgTemp)}° · ${Math.round(d.maxWind)}km/h${southIndicator}</span>
-                                            <span class="score" style="color: ${info.color}">${score}</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('playaContent').innerHTML = html;
+            return allTides.filter(t => t.time >= dayStart && t.time <= dayEnd);
         }
 
         // =====================================================
-        // RENDER SURF
+        // UI - TOGGLE CARDS
         // =====================================================
-        function renderSurf(data) {
-            const { current, hourly, dailyData } = data;
 
-            if (!marineData) {
-                document.getElementById('surfContent').innerHTML = `
-                    <div class="hero surf-hero">
-                        <div class="rating">🌊</div>
-                        <p style="color: var(--text-muted)">No hay datos de oleaje disponibles</p>
-                    </div>
-                `;
+        function toggleCard(element) {
+            const card = element.closest('.card') || element.closest('.day-card');
+            if (card) {
+                card.classList.toggle('expanded');
+            }
+        }
+
+        // =====================================================
+        // RENDER
+        // =====================================================
+
+        function render() {
+            const content = document.getElementById('content');
+
+            if (!weatherData) {
+                content.innerHTML = '<div class="error-card">No se pudieron cargar los datos. Intentá actualizar.</div>';
                 return;
             }
 
-            const surfRating = getSurfRating(current.waveHeight, current.wavePeriod, current.wind, current.windDir);
-            const windQuality = getWindQuality(current.wind, current.windDir);
+            const days = processWeatherByDay(weatherData);
+            const today = days[0];
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentWeather = today.hours.find(h => h.hour === currentHour) || today.hours[0];
+            const indexInfo = getIndexInfo(today.beachIndex);
 
-            // Find best hours for surf
-            const goodHours = hourly.filter(h => {
-                const rating = getSurfRating(h.waveHeight, h.wavePeriod, h.wind, h.windDir);
-                return rating.emoji === '🤙' || rating.emoji === '🔥';
-            });
+            // Mareas
+            const estimatedTides = estimateTides(now, 7);
+            const allTides = processTides(tidesData, estimatedTides);
+            const todayTides = getTidesForDay(allTides, now);
+            const remainingTides = todayTides.filter(t => t.time > now);
+            const nextTide = allTides.find(t => t.time > now);
+            const tidesAreEstimated = !tidesData || allTides[0]?.estimated;
 
-            let bestHoursText = 'Sin ventana clara hoy';
-            if (goodHours.length > 0) {
-                const start = goodHours[0].hour;
-                const end = goodHours[goodHours.length - 1].hour;
-                bestHoursText = `${start}:00 - ${end + 1}:00`;
+            // Alertas
+            const alerts = [];
+            if (today.hasSudestada) {
+                alerts.push({ type: 'danger', icon: '🌊', title: 'Alerta Sudestada', desc: 'Condiciones peligrosas en la costa' });
+            } else if (today.hasSouthWind && today.maxWind > 25) {
+                alerts.push({ type: 'warning', icon: '💨', title: 'Viento Sur fuerte', desc: 'Playa incómoda, mucho viento y frío' });
+            }
+            if (today.maxRainProb > 60) {
+                alerts.push({ type: 'warning', icon: '🌧️', title: 'Probabilidad de lluvia', desc: `Hasta ${today.maxRainProb}% durante el día` });
             }
 
-            let html = `
-                <div class="hero surf-hero">
-                    <div class="rating">${surfRating.emoji}</div>
-                    <div class="wave-display">
-                        <span class="height">${current.waveHeight.toFixed(1)}</span>
-                        <span class="unit">m</span>
-                        <span class="period">@ ${current.wavePeriod.toFixed(0)}s</span>
-                    </div>
-                    <div class="label" style="color: ${surfRating.color}">${surfRating.label}</div>
-                </div>
+            let html = '';
 
-                <div class="surf-conditions">
-                    <div class="surf-stat ${windQuality.class}">
-                        <div class="label">Viento</div>
-                        <div class="value">${getWindArrow(current.windDir)} ${Math.round(current.wind)}</div>
-                        <div class="detail">${windQuality.text}</div>
+            // Alertas
+            alerts.forEach(alert => {
+                html += `
+                    <div class="alert-banner ${alert.type === 'warning' ? 'warning' : ''}">
+                        <span class="alert-icon">${alert.icon}</span>
+                        <div class="alert-text">
+                            <div class="alert-title">${alert.title}</div>
+                            <div class="alert-desc">${alert.desc}</div>
+                        </div>
                     </div>
-                    <div class="surf-stat">
-                        <div class="label">Dirección ola</div>
-                        <div class="value">${getWindDir(current.waveDir)}</div>
-                        <div class="detail">${Math.round(current.waveDir)}°</div>
-                    </div>
-                    <div class="surf-stat">
-                        <div class="label">Swell</div>
-                        <div class="value">${current.swellHeight.toFixed(1)}m</div>
-                        <div class="detail">@ ${current.swellPeriod.toFixed(0)}s</div>
-                    </div>
-                    <div class="surf-stat">
-                        <div class="label">Agua</div>
-                        <div class="value">~18°</div>
-                        <div class="detail">Verano</div>
-                    </div>
-                </div>
+                `;
+            });
 
-                ${goodHours.length > 0 ? `
-                <div class="best-hours">
-                    <div class="title">🤙 Mejor ventana</div>
-                    <div class="hours">${bestHoursText}</div>
-                </div>
-                ` : ''}
-
-                <div class="section open">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-title">⏰ Oleaje por hora</span>
-                        <span class="section-toggle">▼</span>
+            // Sin API key
+            if (!WORLDTIDES_KEY) {
+                html += `
+                    <div class="api-prompt">
+                        <h3>🌊 Mareas precisas</h3>
+                        <p>Para mareas exactas, ingresá tu API key de WorldTides ($10 = 5,000 consultas).</p>
+                        <input type="text" id="apiKeyInput" placeholder="Tu API key de WorldTides">
+                        <button onclick="saveApiKey()">Guardar</button>
                     </div>
-                    <div class="section-content">
-                        <div class="section-inner">
-                            <div class="hourly-scroll">
-                                ${hourly.slice(0, 12).map(h => {
-                                    const r = getSurfRating(h.waveHeight, h.wavePeriod, h.wind, h.windDir);
-                                    const isGood = r.emoji === '🤙' || r.emoji === '🔥';
-                                    return `
-                                        <div class="surf-hour-card ${isGood ? 'good' : ''}">
-                                            <div class="time">${h.isNow ? 'Ahora' : h.hour + ':00'}</div>
-                                            <div class="wave">${h.waveHeight.toFixed(1)}m</div>
-                                            <div class="wind">${getWindArrow(h.windDir)} ${Math.round(h.wind)}</div>
-                                            <div class="rating">${r.emoji}</div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
+                `;
+            }
+
+            // Score principal
+            const windDesc = getWindDescription(currentWeather.wind, currentWeather.windDir);
+            const tempDesc = getTempDescription(currentWeather.temp, currentWeather.apparent);
+            const cloudDesc = getCloudDescription(currentWeather.clouds);
+            const rainDesc = getRainDescription(currentWeather.rainProb, currentWeather.rain);
+
+            html += `
+                <div class="main-score">
+                    <p class="date">${formatDate(today.date)}</p>
+                    <div class="score-row">
+                        <span class="emoji">${indexInfo.emoji}</span>
+                        <div>
+                            <span class="score-number">${today.beachIndex}</span><span class="score-max">/10</span>
+                        </div>
+                    </div>
+                    <p class="score-label">${indexInfo.label} para playa</p>
+
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-icon">${tempDesc.emoji}</span>
+                            <span class="stat-value">${Math.round(currentWeather.temp)}°</span>
+                            <span class="stat-label">Ahora</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">${windDesc.emoji}</span>
+                            <span class="stat-value">${Math.round(currentWeather.wind)}</span>
+                            <span class="stat-label">km/h</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">${cloudDesc.emoji}</span>
+                            <span class="stat-value">${currentWeather.clouds}%</span>
+                            <span class="stat-label">Nubes</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">${rainDesc.emoji}</span>
+                            <span class="stat-value">${currentWeather.rainProb}%</span>
+                            <span class="stat-label">Lluvia</span>
                         </div>
                     </div>
                 </div>
-
-                <div class="section">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <span class="section-title">📅 Próximos días</span>
-                        <span class="section-toggle">▼</span>
-                    </div>
-                    <div class="section-content">
-                        <div class="section-inner">
-                            <div class="forecast-days">
-                                ${dailyData.slice(1, 5).map(d => {
-                                    const r = getSurfRating(d.avgWave, d.avgPeriod, d.maxWind, 0);
-                                    return `
-                                        <div class="day-row">
-                                            <span class="day">${formatDayShort(d.date)}</span>
-                                            <span class="emoji">${r.emoji}</span>
-                                            <span class="details">${d.avgWave.toFixed(1)}m @ ${d.avgPeriod.toFixed(0)}s</span>
-                                            <span class="score" style="color: ${r.color}">${r.label}</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <p class="disclaimer">
-                    Datos: Open-Meteo Marine · Chapa funciona mejor con swell del S/SW y viento offshore del N/NO
-                </p>
             `;
 
-            document.getElementById('surfContent').innerHTML = html;
+            // Card: Temperatura
+            html += `
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <span class="icon">🌡️</span>
+                            <div>
+                                <div class="text">Temperatura</div>
+                                <div class="subtext">${tempDesc.text}</div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-value">
+                                <div class="main">${Math.round(today.minTemp)}° - ${Math.round(today.maxTemp)}°</div>
+                                <div class="sub">ST: ${Math.round(currentWeather.apparent)}°</div>
+                            </div>
+                            <span class="card-toggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-inner">
+                            <div class="hourly-scroll">
+                                ${today.hours.filter(h => h.hour >= 8 && h.hour <= 22).map(h => `
+                                    <div class="hour-item ${h.isCurrent ? 'current' : ''}">
+                                        <div class="time">${h.hour}:00</div>
+                                        <div class="value">${Math.round(h.temp)}°</div>
+                                        <div class="extra">ST ${Math.round(h.apparent)}°</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Card: Viento
+            html += `
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <span class="icon">💨</span>
+                            <div>
+                                <div class="text">Viento</div>
+                                <div class="subtext">${windDesc.text}</div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-value">
+                                <div class="main ${windDesc.class}">${Math.round(currentWeather.wind)} km/h</div>
+                                <div class="sub">${getWindDirection(currentWeather.windDir)} · Ráf ${Math.round(currentWeather.gusts)}</div>
+                            </div>
+                            <span class="card-toggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-inner">
+                            <div class="hourly-scroll">
+                                ${today.hours.filter(h => h.hour >= 8 && h.hour <= 22).map(h => {
+                                    const wd = getWindDescription(h.wind, h.windDir);
+                                    return `
+                                        <div class="hour-item ${h.isCurrent ? 'current' : ''}">
+                                            <div class="time">${h.hour}:00</div>
+                                            <div class="value">${Math.round(h.wind)}</div>
+                                            <div class="extra">${getWindDirection(h.windDir)} ${wd.emoji}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Card: Lluvia y nubes
+            html += `
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <span class="icon">🌧️</span>
+                            <div>
+                                <div class="text">Lluvia y nubes</div>
+                                <div class="subtext">${rainDesc.text} · ${cloudDesc.text}</div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-value">
+                                <div class="main ${rainDesc.class}">${today.maxRainProb}%</div>
+                                <div class="sub">máx prob.</div>
+                            </div>
+                            <span class="card-toggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-inner">
+                            <div class="hourly-scroll">
+                                ${today.hours.filter(h => h.hour >= 8 && h.hour <= 22).map(h => {
+                                    const cd = getCloudDescription(h.clouds);
+                                    return `
+                                        <div class="hour-item ${h.isCurrent ? 'current' : ''}">
+                                            <div class="time">${h.hour}:00</div>
+                                            <div class="value">${cd.emoji}</div>
+                                            <div class="extra">${h.rainProb}% 🌧️</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Card: UV
+            const uvDesc = getUVDescription(currentWeather.uv);
+            html += `
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <span class="icon">☀️</span>
+                            <div>
+                                <div class="text">Índice UV</div>
+                                <div class="subtext">${uvDesc.tip}</div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-value">
+                                <div class="main">${uvDesc.emoji} ${uvDesc.text}</div>
+                                <div class="sub">Máx: ${Math.round(today.maxUV)}</div>
+                            </div>
+                            <span class="card-toggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-inner">
+                            <div class="hourly-scroll">
+                                ${today.hours.filter(h => h.hour >= 8 && h.hour <= 20).map(h => {
+                                    const ud = getUVDescription(h.uv);
+                                    return `
+                                        <div class="hour-item ${h.isCurrent ? 'current' : ''}">
+                                            <div class="time">${h.hour}:00</div>
+                                            <div class="value">${ud.emoji}</div>
+                                            <div class="extra">UV ${Math.round(h.uv)}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Card: Mareas
+            html += `
+                <div class="card ${remainingTides.length > 0 ? '' : 'expanded'}">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <span class="icon">🌊</span>
+                            <div>
+                                <div class="text">Mareas ${tidesAreEstimated ? '(estimadas)' : ''}</div>
+                                <div class="subtext">${nextTide ? (nextTide.type === 'high' ? 'Sube → Pleamar' : 'Baja → Bajamar') : ''}</div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-value">
+                                <div class="main">${nextTide ? formatTime(nextTide.time) : '--'}</div>
+                                <div class="sub">${nextTide ? (nextTide.type === 'high' ? 'próx. alta' : 'próx. baja') : ''}</div>
+                            </div>
+                            <span class="card-toggle">▼</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-inner">
+                            <div class="tide-timeline">
+                                ${todayTides.map(t => {
+                                    const isPast = t.time < now;
+                                    const isHigh = t.type === 'high';
+                                    return `
+                                        <div class="tide-event ${t.type} ${isPast ? 'past' : ''}">
+                                            <span class="tide-icon">${isHigh ? '🔺' : '🔻'}</span>
+                                            <div class="tide-info">
+                                                <div class="tide-type">${isHigh ? 'Pleamar (alta)' : 'Bajamar (baja)'}</div>
+                                                <div class="tide-desc">${isHigh ? 'Menos playa, mar más cerca' : 'Más playa, mar más lejos'}</div>
+                                            </div>
+                                            <div>
+                                                <div class="tide-time">${formatTime(t.time)}</div>
+                                                ${t.height ? `<div class="tide-height">${t.height.toFixed(1)}m</div>` : ''}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            ${tidesAreEstimated ? '<p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; text-align: center;">⚠️ Mareas aproximadas. Agregá tu API key de WorldTides para datos precisos.</p>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Próximos días
+            html += `<div class="section-header">Próximos días</div>`;
+            html += `<div class="forecast-days">`;
+
+            days.slice(1, 6).forEach(day => {
+                const dayInfo = getIndexInfo(day.beachIndex);
+                const dayTides = getTidesForDay(allTides, day.date);
+                const firstHigh = dayTides.find(t => t.type === 'high');
+                const firstLow = dayTides.find(t => t.type === 'low');
+
+                html += `
+                    <div class="day-card">
+                        <div class="day-header" onclick="toggleCard(this)">
+                            <div class="day-left">
+                                <span class="day-emoji">${dayInfo.emoji}</span>
+                                <div>
+                                    <div class="day-name">${formatDateShort(day.date)}</div>
+                                    <div class="day-date">${dayInfo.label}</div>
+                                </div>
+                            </div>
+                            <div class="day-right">
+                                <div>
+                                    <span class="day-score ${dayInfo.class}">${day.beachIndex}</span>
+                                    <div class="day-summary">
+                                        ${Math.round(day.minTemp)}°-${Math.round(day.maxTemp)}° · 💨${Math.round(day.maxWind)}
+                                    </div>
+                                </div>
+                                <span class="day-toggle">▼</span>
+                            </div>
+                        </div>
+                        <div class="day-content">
+                            <div class="day-inner">
+                                <div class="day-detail-row">
+                                    <span class="day-detail-label">🌡️ Temperatura</span>
+                                    <span>${Math.round(day.minTemp)}° - ${Math.round(day.maxTemp)}°</span>
+                                </div>
+                                <div class="day-detail-row">
+                                    <span class="day-detail-label">💨 Viento máx</span>
+                                    <span>${Math.round(day.maxWind)} km/h ${day.hasSouthWind ? '(Sur ⚠️)' : ''}</span>
+                                </div>
+                                <div class="day-detail-row">
+                                    <span class="day-detail-label">🌧️ Prob. lluvia</span>
+                                    <span>${day.maxRainProb}%</span>
+                                </div>
+                                <div class="day-detail-row">
+                                    <span class="day-detail-label">☁️ Nubosidad</span>
+                                    <span>${Math.round(day.avgClouds)}%</span>
+                                </div>
+                                <div class="day-detail-row">
+                                    <span class="day-detail-label">☀️ UV máx</span>
+                                    <span>${Math.round(day.maxUV)}</span>
+                                </div>
+                                ${firstHigh ? `
+                                    <div class="day-detail-row">
+                                        <span class="day-detail-label">🔺 Pleamar</span>
+                                        <span>${formatTime(firstHigh.time)}</span>
+                                    </div>
+                                ` : ''}
+                                ${firstLow ? `
+                                    <div class="day-detail-row">
+                                        <span class="day-detail-label">🔻 Bajamar</span>
+                                        <span>${formatTime(firstLow.time)}</span>
+                                    </div>
+                                ` : ''}
+
+                                <div style="margin-top: 12px;">
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">Temperatura por hora:</div>
+                                    <div class="hourly-scroll">
+                                        ${day.hours.filter(h => h.hour >= 9 && h.hour <= 19).map(h => `
+                                            <div class="hour-item">
+                                                <div class="time">${h.hour}h</div>
+                                                <div class="value">${Math.round(h.temp)}°</div>
+                                                <div class="extra">${Math.round(h.rainProb)}%🌧️</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+
+            content.innerHTML = html;
+        }
+
+        // =====================================================
+        // API KEY MANAGEMENT
+        // =====================================================
+
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput');
+            if (input && input.value.trim()) {
+                WORLDTIDES_KEY = input.value.trim();
+                localStorage.setItem('worldtides_key', WORLDTIDES_KEY);
+                loadAllData();
+            }
         }
 
         // =====================================================
         // LOAD DATA
         // =====================================================
+
         async function loadAllData() {
             const btn = document.getElementById('refreshBtn');
-            btn.classList.add('loading');
+            const content = document.getElementById('content');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Cargando...';
+
+            content.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando condiciones...</p>
+                </div>
+            `;
 
             try {
-                const [weather, marine] = await Promise.all([
+                // Fetch en paralelo
+                const [weather, tides] = await Promise.all([
                     fetchWeather(),
-                    fetchMarine().catch(() => null)
+                    fetchTides()
                 ]);
 
                 weatherData = weather;
-                marineData = marine;
+                tidesData = tides;
 
-                const data = processData();
-                renderPlaya(data);
-                renderSurf(data);
+                render();
 
                 document.getElementById('lastUpdate').textContent =
-                    `Actualizado ${formatTime(new Date())}`;
+                    `Actualizado: ${formatTime(new Date())}`;
 
             } catch (error) {
-                console.error(error);
-                document.getElementById('playaContent').innerHTML = `
-                    <div class="hero">
-                        <div class="rating">❌</div>
-                        <p>Error al cargar datos</p>
-                        <p style="font-size: 0.8rem; color: var(--text-muted)">${error.message}</p>
+                console.error('Error:', error);
+                content.innerHTML = `
+                    <div class="error-card">
+                        <p>❌ Error al cargar</p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">${error.message}</p>
                     </div>
                 `;
             } finally {
-                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.textContent = '🔄 Actualizar';
             }
         }
 
