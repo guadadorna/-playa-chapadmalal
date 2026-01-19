@@ -1298,16 +1298,16 @@
             });
 
             // API key prompt
-            if (!WORLDTIDES_KEY) {
-                html += `
-                    <div class="api-prompt">
-                        <h3>🌊 Mareas precisas</h3>
-                        <p>Para mareas exactas, ingresá tu API key de WorldTides ($10 = 5,000 consultas).</p>
-                        <input type="text" id="apiKeyInput" placeholder="Tu API key de WorldTides">
-                        <button onclick="saveApiKey()">Guardar</button>
-                    </div>
-                `;
-            }
+            //if (!WORLDTIDES_KEY) {
+            //    html += `
+            //        <div class="api-prompt">
+            //            <h3>🌊 Mareas precisas</h3>
+            //            <p>Para mareas exactas, ingresá tu API key de WorldTides ($10 = 5,000 consultas).</p>
+            //            <input type="text" id="apiKeyInput" placeholder="Tu API key de WorldTides">
+            //            <button onclick="saveApiKey()">Guardar</button>
+            //        </div>
+            //    `;
+            //}
 
             // Score principal
             const windDesc = getWindDescription(currentWeather.wind, currentWeather.windDir);
